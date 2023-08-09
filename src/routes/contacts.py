@@ -31,9 +31,9 @@ async def read_contact(contact_id: int, db: Session = Depends(get_db)):
     return contact
 
 
-@router.get("/find/{item}", response_model=ContactResponse)
-async def find_contact_by_name_last_name_or_email(item: str, db: Session = Depends(get_db)):
-    contact = await repo_contacts.find_contact(item, db)
+@router.get("/find/{search_string}", response_model=ContactResponse)
+async def find_contact_by_name_last_name_or_email(search_string: str, db: Session = Depends(get_db)):
+    contact = await repo_contacts.find_contact(search_string, db)
     if contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
     return contact

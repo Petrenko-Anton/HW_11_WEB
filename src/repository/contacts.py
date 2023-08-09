@@ -28,8 +28,14 @@ async def get_contact(contact_id: int, db: Session) -> Contact:
     return db.query(Contact).filter(Contact.id == contact_id).first()
 
 
-async def find_contact(item: str, db: Session) -> Contact:
-    return db.query(Contact).filter(or_(Contact.name == item, Contact.email == item, Contact.last_name == item)).one_or_none()
+async def find_contact(search_string: str, db: Session) -> Contact:
+    return db.query(Contact).filter(or_(Contact.name.startswith(search_string), Contact.name.endswith(search_string),
+                                        Contact.name == search_string,
+                                        Contact.email.startswith(search_string), Contact.email.endswith(search_string),
+                                        Contact.email == search_string,
+                                        Contact.last_nsme.startswith(search_string),
+                                        Contact.last_name.endswith(search_string),
+                                        Contact.last_name == search_string)).one_or_none()
 
 
 async def create_contact(body: ContactModel, db: Session) -> Contact:
