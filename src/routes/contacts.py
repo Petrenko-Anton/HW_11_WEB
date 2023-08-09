@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends, status
 from sqlalchemy.orm import Session
 
 from src.database.db import get_db
-from src.schemas import ContactModel, ContactResponse
+from src.schemas import ContactModel, ContactResponse, ContactUpdate
 from src.repository import contacts as repo_contacts
 
 
@@ -31,25 +31,9 @@ async def read_contact(contact_id: int, db: Session = Depends(get_db)):
     return contact
 
 
-@router.get("/find/{contact_name}", response_model=ContactResponse)
-async def find_contact_by_name(contact_name: str, db: Session = Depends(get_db)):
-    contact = await repo_contacts.find_contact(contact_name, db)
-    if contact is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
-    return contact
-
-
-@router.get("/find/{contact_phone}", response_model=ContactResponse)
-async def find_contact_by_phone(contact_phone: str, db: Session = Depends(get_db)):
-    contact = await repo_contacts.find_contact(contact_phone, db)
-    if contact is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
-    return contact
-
-
-@router.get("/find/{contact_email}", response_model=ContactResponse)
-async def find_contact_by_email(contact_email: str, db: Session = Depends(get_db)):
-    contact = await repo_contacts.find_contact(contact_email, db)
+@router.get("/find/{item}", response_model=ContactResponse)
+async def find_contact_by_name_last_name_or_email(item: str, db: Session = Depends(get_db)):
+    contact = await repo_contacts.find_contact(item, db)
     if contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
     return contact
@@ -61,7 +45,7 @@ async def create_contact(body: ContactModel, db: Session = Depends(get_db)):
 
 
 @router.put("/{contact_id}", response_model=ContactResponse)
-async def update_contact(body: ContactModel, contact_id: int, db: Session = Depends(get_db)):
+async def update_contact(body: ContactUpdate, contact_id: int, db: Session = Depends(get_db)):
     contact = await repo_contacts.update_contact(contact_id, body, db)
     if contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")

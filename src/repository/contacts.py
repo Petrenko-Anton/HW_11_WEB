@@ -1,10 +1,11 @@
 from typing import List
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 
 
 from src.database.models import Contact
-from src.schemas import ContactModel
+from src.schemas import ContactModel, ContactUpdate
 
 
 async def seven_days(db: Session) -> List[Contact]:
@@ -28,7 +29,7 @@ async def get_contact(contact_id: int, db: Session) -> Contact:
 
 
 async def find_contact(item: str, db: Session) -> Contact:
-    return db.query(Contact).filter(Contact.name == item | Contact.email == item | Contact.last_name == item).one_or_none()
+    return db.query(Contact).filter(or_(Contact.name == item, Contact.email == item, Contact.last_name == item)).one_or_none()
 
 
 async def create_contact(body: ContactModel, db: Session) -> Contact:
@@ -48,16 +49,12 @@ async def remove_contact(contact_id: int, db: Session) -> Contact | None:
     return contact
 
 
-async def update_contact(contact_id: int, body: ContactModel, db: Session) -> Contact | None:
+async def update_contact(contact_id: int, body: ContactUpdate, db: Session) -> Contact | None:
     contact = db.query(Contact).filter(Contact.id == contact_id).first()
     if contact:
-        contact.name = body.name
-        contact.last_name = body.last_name
-        contact.phone = body.phone
-        contact.email = body.email
-        contact.birthday = body.birthday
-        contact.description = body.description
-
+        update_data = {k: v for k, v in body.model_dump().items() if v is not None}
+        db.query(Contact).filter(Contact.id == contact_id).update(update_data)
         db.commit()
+        db.refresh(contact)
     return contact
 
