@@ -33,7 +33,7 @@ async def find_contact(search_string: str, db: Session) -> Contact:
                                         Contact.name == search_string,
                                         Contact.email.startswith(search_string), Contact.email.endswith(search_string),
                                         Contact.email == search_string,
-                                        Contact.last_nsme.startswith(search_string),
+                                        Contact.last_name.startswith(search_string),
                                         Contact.last_name.endswith(search_string),
                                         Contact.last_name == search_string)).one_or_none()
 

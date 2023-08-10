@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text
-from sqlalchemy.sql.sqltypes import DateTime
+from sqlalchemy.sql.sqltypes import Date
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -12,7 +12,7 @@ class Contact(Base):
     last_name = Column(String, nullable=True)
     phone = Column(String, nullable=False)
     email = Column(String, nullable=True)
-    birthday = Column('b_day', DateTime, nullable=True)
+    birthday = Column('b_day', Date, nullable=True)
     description = Column(Text, nullable=True)
 
 
